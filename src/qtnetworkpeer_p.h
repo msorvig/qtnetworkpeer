@@ -39,7 +39,7 @@ private:
     int m_port;
     QByteArray m_helloString;
     QByteArray m_portString;
-    QByteArray m_AddressString;
+    QByteArray m_addressString;
 
     QTimer m_timer;
     QUdpSocket m_udpSenderSocket;

@@ -7,7 +7,7 @@ QtNetworkPeerPrivate::QtNetworkPeerPrivate(QtNetworkPeer *qtDistributed)
     ,m_port(45456)
     ,m_helloString("Connect QtDistributed ")
     ,m_portString("Port ")
-    ,m_AddressString(" Address ")
+    ,m_addressString(" Address ")
 {
     // Start Tcp server for inbound connections
     connect(&m_tcpServer, SIGNAL(newConnection()), SLOT(inboundConnectionAvailable()));
@@ -74,7 +74,7 @@ void QtNetworkPeerPrivate::broadcast()
     QByteArray datagram = m_helloString;
     datagram += m_portString;
     datagram += QString::number(m_tcpServer.serverPort()).toLatin1();
-    datagram += m_AddressString;
+    datagram += m_addressString;
 
     foreach (QHostAddress address, nonlocalAddresses()) {
         datagram += address.toString().toLatin1();
@@ -125,9 +125,9 @@ void QtNetworkPeerPrivate::processBroadcastDatagrams()
         datagram = datagram.mid(portText.length());
 
         // Get Addresses ("Address a.b.c.d e.f.g.h")
-        if (!datagram.startsWith(m_AddressString))
+        if (!datagram.startsWith(m_addressString))
             return;
-        datagram = datagram.mid(m_AddressString.length()); // remove m_AddressStrings
+        datagram = datagram.mid(m_addressString.length()); // remove m_AddressStrings
 
         // Skip connections to self
         foreach (QHostAddress address, nonlocalAddresses()) {

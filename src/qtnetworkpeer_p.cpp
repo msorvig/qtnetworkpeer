@@ -42,11 +42,11 @@ void QtNetworkPeerPrivate::setBroadcastEnabled(bool enable)
 void QtNetworkPeerPrivate::disconnectAllPeers()
 {
     foreach(QTcpSocket *socket, m_acceptedOutboundConnections.values())
-        socket->disconnect();
+        socket->close();
     m_acceptedInboundConnections.clear();
 
     foreach(QTcpSocket *socket, m_acceptedInboundConnections.values())
-        socket->disconnect();
+        socket->close();
     m_acceptedOutboundConnections.clear();
 }
 
@@ -185,7 +185,7 @@ void QtNetworkPeerPrivate::outboundConnectionAvailable()
     // the Peer to avoid duplicate connections.
     if (!m_knownPeers.contains(clientConnection->peerAddress())) {
         qDebug() << "unkonown host" << clientConnection->peerAddress().toString();
-        clientConnection->disconnect();
+        clientConnection->close();
         return;
     }
 
@@ -193,7 +193,7 @@ void QtNetworkPeerPrivate::outboundConnectionAvailable()
     foreach (const QHostAddress &address, m_knownPeers.value(clientConnection->peerAddress())) {
         if (m_acceptedOutboundConnections.contains(address)) {
             qDebug() << "initiated: already connected";
-            clientConnection->disconnect();
+            clientConnection->close();
             return;
         }
     }
@@ -223,14 +223,14 @@ void QtNetworkPeerPrivate::inboundConnectionAvailable()
     qDebug() << "incomming connect from" << clientConnection->peerAddress().toString();
     if (!m_knownPeers.contains(clientConnection->peerAddress())) {
         qDebug() << "unkonown host" << clientConnection->peerAddress().toString();
-        clientConnection->disconnect();
+        clientConnection->close();
         return;
     }
     // Disconnect if we already have an incomming connection to the peer
     foreach (const QHostAddress &address, m_knownPeers.value(clientConnection->peerAddress())) {
         if (m_acceptedInboundConnections.contains(address)) {
             qDebug() << "incomming: already connected";
-            clientConnection->disconnect();
+            clientConnection->close();
             return;
         }
     }

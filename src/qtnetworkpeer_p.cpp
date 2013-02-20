@@ -180,7 +180,7 @@ void QtNetworkPeerPrivate::outboundConnectionAvailable()
         return;
     connect(clientConnection, SIGNAL(disconnected()), clientConnection, SLOT(deleteLater()));
 
-    qDebug() << "initiated connect to" << clientConnection->peerAddress().toString();
+    qDebug() << "outbound connect to" << clientConnection->peerAddress().toString();
     // Don't connect to unknown peers. We need to know all addresses accociated with
     // the Peer to avoid duplicate connections.
     if (!m_knownPeers.contains(clientConnection->peerAddress())) {
@@ -192,13 +192,13 @@ void QtNetworkPeerPrivate::outboundConnectionAvailable()
     // Disconnect if we already have an outgoing connection to the peer.
     foreach (const QHostAddress &address, m_knownPeers.value(clientConnection->peerAddress())) {
         if (m_acceptedOutboundConnections.contains(address)) {
-            qDebug() << "initiated: already connected";
+            qDebug() << "outbound: already connected";
             clientConnection->close();
             return;
         }
     }
 
-    qDebug() << "accept initiated connection to" << clientConnection->peerAddress().toString();
+    qDebug() << "accept outbound connection to" << clientConnection->peerAddress().toString();
     m_acceptedOutboundConnections[clientConnection->peerAddress()] = clientConnection;
     connect(clientConnection, SIGNAL(disconnected()), SLOT(outboundConnectionDisconnected()));
 }
@@ -220,22 +220,22 @@ void QtNetworkPeerPrivate::inboundConnectionAvailable()
     QTcpSocket *clientConnection = m_tcpServer.nextPendingConnection();
     connect(clientConnection, SIGNAL(disconnected()), clientConnection, SLOT(deleteLater()));
 
-    qDebug() << "incomming connect from" << clientConnection->peerAddress().toString();
+    qDebug() << "inbound connect from" << clientConnection->peerAddress().toString();
     if (!m_knownPeers.contains(clientConnection->peerAddress())) {
         qDebug() << "unkonown host" << clientConnection->peerAddress().toString();
         clientConnection->close();
         return;
     }
-    // Disconnect if we already have an incomming connection to the peer
+    // Disconnect if we already have an inbound connection to the peer
     foreach (const QHostAddress &address, m_knownPeers.value(clientConnection->peerAddress())) {
         if (m_acceptedInboundConnections.contains(address)) {
-            qDebug() << "incomming: already connected";
+            qDebug() << "inbound: already connected";
             clientConnection->close();
             return;
         }
     }
 
-    qDebug() << "accept incomming connection from" << clientConnection->peerAddress().toString();
+    qDebug() << "accept inbound connection from" << clientConnection->peerAddress().toString();
     m_acceptedInboundConnections[clientConnection->peerAddress()] = clientConnection;
     connect(clientConnection, SIGNAL(disconnected()), SLOT(inboundConnectionDisconnected()));
     connect(clientConnection, SIGNAL(readyRead()), SLOT(processMessage()));
@@ -247,7 +247,7 @@ void QtNetworkPeerPrivate::inboundConnectionDisconnected()
     if (!socket)
         return;
 
-    qDebug() << "incoming disconnect" << socket->peerAddress();
+    qDebug() << "inbound disconnect" << socket->peerAddress();
     m_acceptedInboundConnections.remove(socket->peerAddress());
 }
 
